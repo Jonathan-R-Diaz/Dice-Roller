@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_stop"
+        android:title="@string/action_stop"
+        android:icon="@drawable/stop"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_roll"
+        android:title="@string/action_roll"
+        android:icon="@drawable/roll"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_one"
+        android:title="@string/action_one"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_two"
+        android:title="@string/action_two"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_three"
+        android:title="@string/action_three"
+        app:showAsAction="never"/>
+
+</menu>
