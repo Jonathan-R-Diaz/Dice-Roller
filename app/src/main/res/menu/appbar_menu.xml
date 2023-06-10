@@ -1,5 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_roll_length"
+        android:title="@string/action_roll"
+        android:icon="@drawable/timer"
+        app:showAsAction="ifRoom"/>
+
     <item android:id="@+id/action_stop"
         android:title="@string/action_stop"
         android:icon="@drawable/stop"
