@@ -3,7 +3,9 @@ package com.example.diceroller;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity implements RollLengthDialogFragment.OnRollLengthSelectedListener {
+
+    private int mCurrentDie;
 
     public static final int MAX_DICE = 3;
 
@@ -46,8 +50,40 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
         mVisibleDice = MAX_DICE;
 
         showDice();
+        // Register context menus for all dice and tag each die
+        for (int i = 0; i < mDiceImageViews.length; i++) {
+            registerForContextMenu(mDiceImageViews[i]);
+            mDiceImageViews[i].setTag(i);
+        }
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mCurrentDie = (int) v.getTag();   // Which die is selected?
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add_one) {
+            mDice[mCurrentDie].addOne();
+            showDice();
+            return true;
+        }
+        else if (item.getItemId() == R.id.subtract_one) {
+            mDice[mCurrentDie].subtractOne();
+            showDice();
+            return true;
+        }
+        else if (item.getItemId() == R.id.roll) {
+            rollDice();
+            return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

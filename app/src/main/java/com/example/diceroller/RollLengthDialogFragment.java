@@ -3,6 +3,9 @@ package com.example.diceroller;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -11,6 +14,9 @@ import androidx.fragment.app.DialogFragment;
 public class RollLengthDialogFragment extends DialogFragment {
 
     public interface OnRollLengthSelectedListener {
+        void onCreateContextMenu(ContextMenu menu, View v,
+                                 ContextMenu.ContextMenuInfo menuInfo);
+
         void onRollLengthClick(int which);
     }
 
