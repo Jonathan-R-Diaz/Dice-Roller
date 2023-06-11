@@ -1,23 +1,29 @@
 package com.example.diceroller;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GestureDetectorCompat;
 
 public class MainActivity extends AppCompatActivity implements RollLengthDialogFragment.OnRollLengthSelectedListener {
 
     private int mCurrentDie;
-
+    private int mInitX;
+    private int mInitY;
     public static final int MAX_DICE = 3;
 
     private CountDownTimer mTimer;
@@ -28,7 +34,10 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
     private Dice[] mDice;
     private ImageView[] mDiceImageViews;
 
+    private GestureDetectorCompat mDetector;
+
     private Menu mMenu;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +61,90 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
         showDice();
         // Register context menus for all dice and tag each die
         for (int i = 0; i < mDiceImageViews.length; i++) {
-            registerForContextMenu(mDiceImageViews[i]);
+            //registerForContextMenu(mDiceImageViews[i]);
             mDiceImageViews[i].setTag(i);
         }
+
+
+        /*
+        // Moving finger left or right changes dice number
+        mDiceImageViews[0].setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    mInitX = (int) event.getX();
+                    mInitY = (int) event.getY();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    int x = (int) event.getX();
+                    int y = (int) event.getY();
+                    // See if movement is at least 20 pixels
+                    if (Math.abs(x - mInitX) >= 20) {
+                        if (x > mInitX) {
+                            mDice[0].addOne();
+                        }
+                        else {
+                            mDice[0].subtractOne();
+                        }
+                        showDice();
+                        mInitX = x;
+                    }
+                    // Adjusted code for a vertical scroll vvv /////////////
+                    else if (Math.abs(y - mInitY) >= 20){
+                        if (y > mInitY) {
+                            mDice[0].addOne();
+                        }
+                        else {
+                            mDice[0].subtractOne();
+                        }
+                        showDice();
+                        mInitY = y;
+                    }
+                    // Adjusted code for a vertical scroll ^^^ /////////////
+                    return true;
+            }
+            return false;
+        });
+        */
+
+        mDetector = new GestureDetectorCompat(this, new DiceGestureListener());
     }
+
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
+    public boolean onTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private class DiceGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            float y = e2.getY() - e1.getY();
+            if (Math.abs(y) > 100 && Math.abs(velocityY) > 100) {
+                if (y > 0) {
+                    // Down fling
+                    rollDice();
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e){
+            rollDice();
+            return true;
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         mCurrentDie = (int) v.getTag();   // Which die is selected?
         MenuInflater inflater = getMenuInflater();
@@ -177,6 +263,4 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
             mDiceImageViews[i].setVisibility(View.GONE);
         }
     }
-
-
 }
